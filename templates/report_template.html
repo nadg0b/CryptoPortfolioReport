@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Crypto Portfolio Balances</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f9f9f9;
+        }
+
+        h1, p {
+            margin: 20px;
+            margin-bottom: 40px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        h1, h2 {
+            color: #2c3e50;
+        }
+
+        h2 {
+            text-decoration: underline;
+            text-align: right;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            table-layout: fixed;
+        }
+
+        thead > tr {
+            background-color: rgb(239 242 245);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            word-wrap: break-word;
+        }
+
+        th:first-child, td:first-child {
+            width: 5%;
+        }
+
+        th:nth-child(2), td:nth-child(2) {
+            width: 15%;
+        }
+
+        th:nth-child(n+3), td:nth-child(n+3) {
+            width: 15%;
+        }
+
+        th:last-child, td:last-child {
+            width: 10%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>💼Crypto Portfolio Overview</h1>
+    </header>
+
+    {% for exchange, info in detailed_balances.items() %}
+        <h3>{{ exchange }} (Total: ${{ info.total_usd | round(2) }})</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Token</th>
+                    <th>Amount</th>
+                    <th>Price (USD)</th>
+                    <th>Value (USD)</th>
+                    <th>Source</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for token, data in info.tokens.items() %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>
+                            <img src="{{ get_logo_filename(token, logo_map) }}" width="24" height="24" alt="{{ token }}" style="vertical-align: middle; margin-right: 8px;">
+                            {{ token }}
+                        </td>
+                        <td>{{ "{:,.8f}".format(data.amount) }}</td>
+                        <td>
+                            {% if data.price_usd %}
+                                ${{ "{:.6f}".format(data.price_usd) }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if data.price_usd %}
+                                ${{ "{:,.4f}".format(data.value_usd) }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>{{ data.source }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endfor %}
+
+    <h2>Total USD Value: ${{ total_usd | round(2) }}</h2>
+    <p><strong>Generated on:</strong> {{ generated_at }}</p>
+</body>
+</html>
